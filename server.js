@@ -12,6 +12,7 @@ require('dotenv').config();
 const express = require('express');
 const { createLogger, format, transports } = require('winston');
 const rateLimit = require('express-rate-limit');
+const config = require('./lib/config');
 const webhookRoutes = require('./routes/webhook');
 const ErrorHandler = require('./utils/errorHandler');
 
