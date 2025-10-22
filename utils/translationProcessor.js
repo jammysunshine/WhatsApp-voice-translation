@@ -35,12 +35,7 @@ class TranslationProcessor {
     this.translationService = new GoogleTranslation();
   }
 
-  /**
-   * Translate text to the configured target languages
-   * @param {string} text - Text to translate
-   * @param {string} sourceLanguage - Source language code (optional, auto-detect if not provided)
-   * @returns {Promise<Object>} - Object with language names as keys and translations as values
-   */
+  /**\n   * Translate text to the configured target languages\n   * @param {string} text - Text to translate\n   * @param {string} sourceLanguage - Source language code (optional, auto-detect if not provided)\n   * @returns {Promise<Object>} - Object with language names as keys and translations as values\n   */
   async translateToTargetLanguages(text, sourceLanguage = null) {
     try {
       // Validate inputs
@@ -103,13 +98,22 @@ class TranslationProcessor {
       throw new Error(handledError.error);
     }
   }
-
-  /**
-   * Process text through translation pipeline
-   * @param {string} transcribedText - Text from speech-to-text conversion
-   * @param {string} sourceLanguage - Source language code (optional)
-   * @returns {Promise<Object>} - Object with original text and translations
+  
+  /**\n   * Extract base language code from locale (e.g., 'en-US' -> 'en', 'es-ES' -> 'es')
+   * @param {string} locale - Locale code like 'en-US'
+   * @returns {string} - Base language code like 'en'
    */
+  extractBaseLanguageCode(locale) {
+    if (!locale || typeof locale !== 'string') {
+      return null;
+    }
+    
+    // Split by hyphen and take the first part (language code)
+    const parts = locale.split('-');
+    return parts[0];
+  }
+
+  /**\n   * Process text through translation pipeline\n   * @param {string} transcribedText - Text from speech-to-text conversion\n   * @param {string} sourceLanguage - Source language code (optional)\n   * @returns {Promise<Object>} - Object with original text and translations\n   */
   async processTranslation(transcribedText, sourceLanguage = null) {
     try {
       // Validate inputs
@@ -121,8 +125,11 @@ class TranslationProcessor {
         transcribedText: transcribedText.substring(0, 100) + (transcribedText.length > 100 ? '...' : '')
       });
       
+      // Extract base language code if a locale is provided (e.g., 'en-US' -> 'en')
+      const baseSourceLanguage = sourceLanguage ? this.extractBaseLanguageCode(sourceLanguage) : null;
+      
       // Perform translations to target languages
-      const translations = await this.translateToTargetLanguages(transcribedText, sourceLanguage);
+      const translations = await this.translateToTargetLanguages(transcribedText, baseSourceLanguage);
       
       // Return object with original text and all translations
       const result = {

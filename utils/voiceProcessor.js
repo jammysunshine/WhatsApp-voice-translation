@@ -66,9 +66,25 @@ class VoiceProcessor {
       
       logger.info('Starting transcription with Google STT service');
       // Get the transcription from the processed audio file
-      const transcribedText = await this.sttService.transcribeAudioFile(processedFilePath);
+      const transcriptionResult = await this.sttService.transcribeAudioFile(processedFilePath);
+      
+      // Handle both old and new return formats
+      let transcribedText, detectedLanguage;
+      if (typeof transcriptionResult === 'string') {
+        // Old format - just the text
+        transcribedText = transcriptionResult;
+        detectedLanguage = null; // Unknown language
+      } else if (typeof transcriptionResult === 'object' && transcriptionResult.text) {
+        // New format - object with text and language
+        transcribedText = transcriptionResult.text;
+        detectedLanguage = transcriptionResult.language;
+      } else {
+        throw new Error('Unexpected transcription result format');
+      }
+      
       logger.info('Audio transcribed successfully', {
-        transcribedTextLength: transcribedText ? transcribedText.length : 0
+        transcribedTextLength: transcribedText ? transcribedText.length : 0,
+        detectedLanguage: detectedLanguage
       });
       
       if (!transcribedText || transcribedText.trim().length === 0) {
@@ -77,7 +93,8 @@ class VoiceProcessor {
       
       logger.info('Starting translation processing');
       // Process the transcription through translation
-      const result = await this.translationProcessor.processTranslation(transcribedText);
+      // Pass the detected language if available
+      const result = await this.translationProcessor.processTranslation(transcribedText, detectedLanguage);
       logger.info('Translation processing completed', {
         originalTextLength: transcribedText.length,
         translationCount: Object.keys(result.translations).length

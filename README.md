@@ -6,7 +6,7 @@ A Node.js-based WhatsApp Business API integration that functions as an automated
 
 - WhatsApp Webhook Integration: Receive messages (specifically voice notes) from WhatsApp via webhooks
 - Voice Note Processing: Download and process incoming voice notes using STT services
-- Automatic Language Detection: Identify the language of the incoming voice note
+- Automatic Language Detection: Identify the language of the incoming voice note using Google Cloud Speech-to-Text API's alternative language codes feature
 - Multi-Language Translation: Translate the transcribed text to English, Arabic, Hindi, and Spanish
 - WhatsApp Response: Send back the translations formatted appropriately for WhatsApp
 - Webhook Validation: Implement proper webhook validation to secure the endpoint
