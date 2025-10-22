@@ -14,7 +14,6 @@ yarn-error.log*
 *.pem
 *.key
 *.cert
-*.json
 coverage/
 .nyc_output
 .c8
@@ -31,4 +30,6 @@ coverage/
 .vercel
 .DS_Store
 *.tsbuildinfo
+logs/
+temp/
 live-translation1-a4cb8bd345d7.json

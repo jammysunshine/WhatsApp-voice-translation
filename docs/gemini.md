@@ -28,31 +28,19 @@ For the overall project goals and requirements, refer to `prompt.md`.
     * `.vercel` - Vercel deployment files
     * `.DS_Store` - macOS system files
     * `*.pem` - Certificate files
-    * `*.tsbuildinfo` - TypeScript build info
+    * `*.key` - Key files
+    * `*.cert` - Certificate files
+    * `*.json` - Sensitive JSON files (credentials, etc.)
     * `coverage/` - Test coverage reports
     * `.pnp`, `.pnp.*`, `.yarn/*` - Package manager specific files
     * `.aider*` - Aider tool files
+    * `logs/` - Log files directory
+    * `temp/` - Temporary files directory
     * Any other build artifacts, temporary files, or binary files.
 
 ---
 
-**Commit Message Guidelines:** Commit messages should be simple, concise, and descriptive. Avoid using special characters (e.g., `!`, `@`, `#`, `# WhatsApp Translation Bot
-
-This is a file created by Qwen.
-
-After every logical step or feature implementation (e.g., after implementing a new function, or fixing a bug, or completing a set of related changes), I will automatically commit and push the changes to the GitHub repository.
-
-For the overall project goals and requirements, refer to `prompt.md`.
-
----
-
-**Important Note:** This `gemini.md` file, along with `README.md` and `prompt.md`, must be reviewed and updated automatically after any significant change to the project to ensure all documentation remains current and accurate.
-
-**Code Maintenance:** Regularly review the code for issues, optimizations, and unused parts (imports, variables, functions, dead code) to maintain a clean, efficient, and high-quality codebase. This should be done frequently and automatically if possible.
-
-*   **Structured Logging:** Implement `winston` for server-side logging and appropriate error handling to improve visibility and management of application events and errors.
-
-, `%`, `^`, `&`, `*`, `(`, `)`, `[`, `]`, `{`, `}`, `;`, `:`, `'`, `\"`, `<`, `>`, `?`, `/`, `\\`, `|`, `~`, `` ` ``, `-`, `_`, `=`, `+`) in the commit message itself to ensure compatibility and readability across various Git tools and platforms.
+**Commit Message Guidelines:** Commit messages should be simple, concise, and descriptive. Avoid using special characters (e.g., `!`, `@`, `#`, `%`, `^`, `&`, `*`, `(`, `)`, `[`, `]`, `{`, `}`, `;`, `:`, `'`, `\"`, `<`, `>`, `?`, `/`, `\\`, `|`, `~`, `` ` ``, `-`, `_`, `=`, `+`) in the commit message itself to ensure compatibility and readability across various Git tools and platforms.
 
 ---
 
