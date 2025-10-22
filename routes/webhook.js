@@ -114,11 +114,22 @@ async function handleWhatsAppMessage(message, webhookEvent) {
       });
       
       // Get the media ID and MIME type from the message
-      const { id: mediaId, mime_type: mimeType } = message.audio;
-      logger.info('Media details from WhatsApp message', {
+      // Log the full audio object to understand its structure
+      logger.info('Full audio object from message', { audioObject: message.audio });
+      
+      const mediaId = message.audio.id || message.audio.media_id;
+      const mimeType = message.audio.mime_type || message.audio.mimetype || 'audio/ogg';
+      
+      logger.info('Media details extracted', {
         mediaId,
         mimeType
       });
+      
+      // Validate that we have a media ID
+      if (!mediaId) {
+        logger.error('No media ID found in audio message', { audio: message.audio });
+        throw new Error('No media ID found in audio message');
+      }
       
       // Process the voice note
       await processVoiceNote(message.from, mediaId, mimeType);
