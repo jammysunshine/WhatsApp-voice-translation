@@ -93,6 +93,7 @@ For the overall project goals and requirements, refer to `prompt.md`.
 *   **Self-Review Before Testing:** Always perform a thorough self-review of all implemented changes, including code, configuration, and documentation, to ensure correctness, completeness, and adherence to project standards *before* asking the user to test.
 *   **Security First:** Always implement security measures as a primary concern when dealing with webhooks and API endpoints.
 *   **Update gemini.md Regularly:** As a critical mandate, this `gemini.md` file must be updated automatically after every major feature implementation or optimization work to document the changes and keep the guidelines current. This includes documenting new testing practices, monitoring features, configuration options, and code quality improvements.
+*   **Main Branch Protection:** NO merging with the main branch should occur without explicit confirmation and approval from the user. All changes must be presented for review before any merge to main.
 
 **Testing Best Practices:**
 
