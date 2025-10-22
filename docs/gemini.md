@@ -86,3 +86,28 @@ For the overall project goals and requirements, refer to `prompt.md`.
 *   **Proper Error Handling:** Preserve and maintain error handling mechanisms when refactoring or adding new functionality.
 *   **Configuration-Driven Development:** Use configuration files to manage settings, API parameters, and feature flags to maintain flexibility and maintainability.
 *   **API Documentation Adherence:** Follow official API documentation to implement features correctly, such as using proper parameters for automatic language detection rather than omitting required fields.
+
+**Branching and Development Workflow:**
+
+*   **Feature Branches:** Use dedicated feature branches (e.g., 'optimize', 'feature-name') for significant work to isolate changes and prevent disruption to the main branch.
+*   **Incremental Development:** Break large improvements into smaller, testable changes that can be developed and validated incrementally.
+*   **Branch Management:** Create new branches for optimization work and other significant changes rather than committing directly to main.
+
+**Testing Best Practices:**
+
+*   **Automated Testing:** Implement automated tests to validate functionality before requesting manual testing by users.
+*   **Module Import Validation:** Test that all modified modules can be imported without syntax errors before testing functionality.
+*   **Configuration Verification:** Confirm that new configurations are properly loaded and accessible to the application.
+*   **Method Functionality Tests:** Verify that new methods and functions work as expected with various inputs.
+*   **Integration Testing:** Ensure all services work together properly in the processing pipeline.
+*   **Backward Compatibility:** Test that changes maintain compatibility with existing functionality.
+*   **Comprehensive Validation:** Create and run tests that validate all aspects of the implemented features before finalizing changes.
+
+**Code Quality and Optimization:**
+
+*   **Resource Management:** Always ensure proper cleanup of temporary files and resources, especially in error handling paths.
+*   **Centralized Validation:** Create reusable validation utilities to reduce code duplication and improve maintainability.
+*   **Security Hardening:** Implement comprehensive input validation and sanitization to protect against injection attacks and invalid payloads.
+*   **Configurable Settings:** Make important parameters configurable through environment variables rather than hardcoding values.
+*   **Consistent Logging:** Use standardized logging approaches throughout the application instead of raw console.log statements.
+*   **Documentation:** Maintain up-to-date documentation for APIs, configuration options, and internal functions.
