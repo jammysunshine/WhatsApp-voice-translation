@@ -37,14 +37,15 @@ const logger = createLogger({
 const app = express();
 
 // Trust proxy settings for cloud deployments
-app.set('trust proxy', true);
+// Trust first proxy which is what Railway uses
+app.set('trust proxy', 1);
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  // Enable trust handler for proxy
-  trustProxy: true
+  // Trust first proxy
+  trustProxy: 1
 });
 
 app.use(limiter);
