@@ -1,0 +1,34 @@
+{
+  "name": "whatsapp-translation-bot",
+  "version": "1.0.0",
+  "description": "A WhatsApp bot that converts voice messages to text and translates them to multiple languages",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "whatsapp",
+    "translation",
+    "bot",
+    "speech-to-text",
+    "voice"
+  ],
+  "author": "Qwen",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/speech": "^6.0.1",
+    "@google-cloud/translate": "^7.2.1",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "ffmpeg-static": "^5.2.0",
+    "multer": "^1.4.5-lts.1",
+    "node-fetch": "^3.3.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,73 @@
+require('dotenv').config();
+const express = require('express');
+const { createLogger, format, transports } = require('winston');
+const rateLimit = require('express-rate-limit');
+const webhookRoutes = require('./routes/webhook');
+const ErrorHandler = require('./utils/errorHandler');
+
+// Create logger
+const logger = createLogger({
+  level: 'info',
+  format: format.combine(
+    format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss'
+    }),
+    format.errors({ stack: true }),
+    format.splat(),
+    format.json()
+  ),
+  defaultMeta: { service: 'whatsapp-translation-bot' },
+  transports: [
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    }),
+    new transports.File({
+      filename: 'logs/error.log',
+      level: 'error'
+    }),
+    new transports.File({ 
+      filename: 'logs/combined.log' 
+    })
+  ]
+});
+
+const app = express();
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Basic route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'WhatsApp Translation Bot is running!',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Webhook routes
+app.use(webhookRoutes);
+
+// Error handling middleware - this should be after all routes
+app.use(ErrorHandler.middleware());
+
+// Export the app for Vercel
+module.exports = app;
+
+// Only start the server if running directly (not on Vercel)
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+
+  app.listen(PORT, () => {
+    logger.info(`Server is running on port ${PORT}`);
+  });
+}
