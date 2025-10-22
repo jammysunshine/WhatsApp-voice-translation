@@ -50,10 +50,11 @@ const app = express();
 // Trust first proxy which is what Railway uses
 app.set('trust proxy', 1);
 
-// Rate limiting
+// Rate limiting - configurable via configuration
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: config.rateLimit.windowMs, // 15 minutes default
+  max: config.rateLimit.maxRequests, // 100 requests per window default
+  message: config.rateLimit.message, // Configurable rate limit message
   // Trust first proxy
   trustProxy: 1
 });
