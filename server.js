@@ -36,10 +36,15 @@ const logger = createLogger({
 
 const app = express();
 
+// Trust proxy settings for cloud deployments
+app.set('trust proxy', true);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP to 100 requests per windowMs
+  // Enable trust handler for proxy
+  trustProxy: true
 });
 
 app.use(limiter);
