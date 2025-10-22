@@ -71,9 +71,24 @@ module.exports = app;
 
 // Only start server if run directly (not imported by Railway)
 if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
+  const PORT = parseInt(process.env.PORT) || 3000;
 
-  app.listen(PORT, () => {
+  const server = app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
+  });
+  
+  // Handle graceful shutdown
+  process.on('SIGTERM', () => {
+    logger.info('SIGTERM received, shutting down gracefully');
+    server.close(() => {
+      logger.info('Process terminated');
+    });
+  });
+  
+  process.on('SIGINT', () => {
+    logger.info('SIGINT received, shutting down gracefully');
+    server.close(() => {
+      logger.info('Process terminated');
+    });
   });
 }
