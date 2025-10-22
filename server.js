@@ -15,6 +15,7 @@ const rateLimit = require('express-rate-limit');
 const config = require('./lib/config');
 const webhookRoutes = require('./routes/webhook');
 const ErrorHandler = require('./utils/errorHandler');
+const monitoringService = require('./utils/monitoring');
 
 // Create logger
 const logger = createLogger({
@@ -72,6 +73,21 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  const healthStatus = monitoringService.getHealthStatus();
+  res.status(200).json(healthStatus);
+});
+
+// Metrics endpoint
+app.get('/metrics', (req, res) => {
+  const metrics = monitoringService.getAllMetrics();
+  res.status(200).json({
+    metrics,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Webhook routes
 app.use(webhookRoutes);
 
@@ -87,6 +103,12 @@ if (require.main === module) {
 
   const server = app.listen(PORT, () => {
     logger.info(`Server is running on port ${PORT}`);
+    
+    // Start periodic monitoring of memory and CPU usage
+    setInterval(() => {
+      monitoringService.recordMemoryUsage();
+      monitoringService.recordCpuUsage();
+    }, 30000); // Record every 30 seconds
   });
   
   // Handle graceful shutdown

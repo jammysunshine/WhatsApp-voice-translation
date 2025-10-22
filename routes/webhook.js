@@ -3,6 +3,7 @@ const config = require('../lib/config');
 const WhatsAppService = require('../lib/services/whatsapp');
 const VoiceProcessor = require('../utils/voiceProcessor');
 const ErrorHandler = require('../utils/errorHandler');
+const monitoringService = require('../utils/monitoring');
 const { createLogger, format, transports } = require('winston');
 
 // Create logger for this module
@@ -74,10 +75,16 @@ router.get('/webhook', ErrorHandler.asyncWrapper(async (req, res) => {
 // Webhook message receiving endpoint
 router.post('/webhook', ErrorHandler.asyncWrapper(async (req, res) => {
   const body = req.body;
+  const startTime = Date.now();
+  
+  // Record the API request
+  monitoringService.startTimer('webhook_request');
   
   // Basic validation of webhook payload structure
   if (!body || typeof body !== 'object') {
     logger.error('Invalid webhook payload: body is not an object');
+    // Record the error
+    monitoringService.recordError('webhook', 'validation', 'invalid_payload');
     return res.status(400).send('Invalid payload');
   }
   
@@ -103,6 +110,8 @@ router.post('/webhook', ErrorHandler.asyncWrapper(async (req, res) => {
       // Validate message structure
       if (!message || typeof message !== 'object' || !message.from || !message.type) {
         logger.error('Invalid message structure in webhook payload', { message });
+        // Record the error
+        monitoringService.recordError('webhook', 'validation', 'invalid_message_structure');
         return res.status(400).send('Invalid message structure');
       }
       
@@ -113,6 +122,8 @@ router.post('/webhook', ErrorHandler.asyncWrapper(async (req, res) => {
       // Validate allowed message types
       if (!['text', 'audio', 'image', 'video', 'document', 'location'].includes(sanitizedType)) {
         logger.warn('Unsupported message type received', { type: sanitizedType });
+        // Record the unsupported message type
+        monitoringService.recordMetric('unsupported_message_type_count', 1, { type: sanitizedType });
         return res.status(200).send('Message type not supported');
       }
       
@@ -125,14 +136,25 @@ router.post('/webhook', ErrorHandler.asyncWrapper(async (req, res) => {
       // Process the message
       await handleWhatsAppMessage(message, webhookEvent);
       
+      // Record the response time
+      const responseTime = Date.now() - startTime;
+      monitoringService.recordApiResponseTime('/webhook', responseTime, 200);
+      monitoringService.endTimer('webhook_request');
+      
       // Return a 200 status to acknowledge the event
       res.sendStatus(200);
     } else {
       // If webhookEvent is not a message, return a 200 status
+      const responseTime = Date.now() - startTime;
+      monitoringService.recordApiResponseTime('/webhook', responseTime, 200);
+      monitoringService.endTimer('webhook_request');
       res.sendStatus(200);
     }
   } else {
     // If body.object is not present, return a 200 status
+    const responseTime = Date.now() - startTime;
+    monitoringService.recordApiResponseTime('/webhook', responseTime, 200);
+    monitoringService.endTimer('webhook_request');
     res.sendStatus(200);
   }
 }));

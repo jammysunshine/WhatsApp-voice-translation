@@ -1,6 +1,7 @@
 const GoogleTranslation = require('../lib/services/google/Translation');
 const config = require('../lib/config');
 const ErrorHandler = require('../utils/errorHandler');
+const monitoringService = require('../utils/monitoring');
 const { createLogger, format, transports } = require('winston');
 
 // Create logger for this module
@@ -35,8 +36,15 @@ class TranslationProcessor {
     this.translationService = new GoogleTranslation();
   }
 
-  /**\n   * Translate text to the configured target languages\n   * @param {string} text - Text to translate\n   * @param {string} sourceLanguage - Source language code (optional, auto-detect if not provided)\n   * @returns {Promise<Object>} - Object with language names as keys and translations as values\n   */
+  /**
+   * Translate text to the configured target languages
+   * @param {string} text - Text to translate
+   * @param {string} sourceLanguage - Source language code (optional, auto-detect if not provided)
+   * @returns {Promise<Object>} - Object with language names as keys and translations as values
+   */
   async translateToTargetLanguages(text, sourceLanguage = null) {
+    monitoringService.startTimer('translation_processing_multiple', { sourceLanguage });
+    
     try {
       // Validate inputs
       if (!text || typeof text !== 'string' || text.trim().length === 0) {
@@ -80,12 +88,30 @@ class TranslationProcessor {
         throw new Error(`Validation failed: ${validationResult.error}`);
       }
 
+      // Record successful translation
+      monitoringService.recordMetric('translation_success', 1, { 
+        sourceLanguage,
+        targetCount: Object.keys(namedTranslations).length 
+      });
+      monitoringService.endTimer('translation_processing_multiple', { 
+        sourceLanguage, 
+        success: true,
+        targetCount: Object.keys(namedTranslations).length 
+      });
+
       return namedTranslations;
     } catch (error) {
       logger.error('Error translating text to target languages', {
         sourceText: text.substring(0, 50) + (text.length > 50 ? '...' : ''),
         error: error.message,
         stack: error.stack
+      });
+      
+      // Record error in monitoring
+      monitoringService.recordError('translation_processor', 'translateToTargetLanguages', error.constructor.name);
+      monitoringService.endTimer('translation_processing_multiple', { 
+        sourceLanguage, 
+        success: false 
       });
       
       // Use the centralized error handler
@@ -99,7 +125,8 @@ class TranslationProcessor {
     }
   }
   
-  /**\n   * Extract base language code from locale (e.g., 'en-US' -> 'en', 'es-ES' -> 'es')
+  /**
+   * Extract base language code from locale (e.g., 'en-US' -> 'en', 'es-ES' -> 'es')
    * @param {string} locale - Locale code like 'en-US'
    * @returns {string} - Base language code like 'en'
    */
@@ -113,8 +140,15 @@ class TranslationProcessor {
     return parts[0];
   }
 
-  /**\n   * Process text through translation pipeline\n   * @param {string} transcribedText - Text from speech-to-text conversion\n   * @param {string} sourceLanguage - Source language code (optional)\n   * @returns {Promise<Object>} - Object with original text and translations\n   */
+  /**
+   * Process text through translation pipeline
+   * @param {string} transcribedText - Text from speech-to-text conversion
+   * @param {string} sourceLanguage - Source language code (optional)
+   * @returns {Promise<Object>} - Object with original text and translations
+   */
   async processTranslation(transcribedText, sourceLanguage = null) {
+    monitoringService.startTimer('translation_pipeline_process', { sourceLanguage });
+    
     try {
       // Validate inputs
       if (!transcribedText || typeof transcribedText !== 'string' || transcribedText.trim().length === 0) {
@@ -154,12 +188,25 @@ class TranslationProcessor {
         throw new Error(`Validation failed: ${validationResult.error}`);
       }
 
+      // Record successful translation process
+      monitoringService.endTimer('translation_pipeline_process', { 
+        sourceLanguage, 
+        success: true 
+      });
+
       return result;
     } catch (error) {
       logger.error('Error in translation processing pipeline', {
         transcribedText: transcribedText.substring(0, 50) + (transcribedText.length > 50 ? '...' : ''),
         error: error.message,
         stack: error.stack
+      });
+      
+      // Record error in monitoring
+      monitoringService.recordError('translation_processor', 'processTranslation', error.constructor.name);
+      monitoringService.endTimer('translation_pipeline_process', { 
+        sourceLanguage, 
+        success: false 
       });
       
       // Use the centralized error handler
