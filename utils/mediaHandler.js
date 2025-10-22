@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const ffmpeg = require('ffmpeg-static');
-const { spawn } = require('child_process');
 const config = require('../lib/config');
 const { createLogger, format, transports } = require('winston');
 
@@ -61,77 +59,6 @@ class MediaHandler {
   }
 
   /**
-   * Convert audio to a format compatible with Google Speech-to-Text API if needed
-   * @param {string} inputPath - Path to the input audio file
-   * @returns {Promise<string>} - Path to the converted audio file
-   */
-  async convertAudioFormat(inputPath) {
-    try {
-      // Extract the file extension to determine if conversion is needed
-      const ext = path.extname(inputPath).toLowerCase();
-      
-      // For .ogg files with opus codec, we might need conversion depending on Google STT requirements
-      // Google Cloud Speech-to-Text supports OGG_OPUS encoding, but sometimes conversion helps
-      if (ext === '.wav' || ext === '.mp3' || ext === '.mp4') {
-        logger.info('Audio is in compatible format, no conversion needed', { inputPath });
-        return inputPath;
-      }
-
-      // For .ogg files or other formats, convert to wav for compatibility
-      const outputPath = inputPath.replace(ext, '_converted.wav');
-
-      // Use ffmpeg to convert the audio to a compatible format
-      return new Promise((resolve, reject) => {
-        const ffmpegProcess = spawn(ffmpeg, [
-          '-i', inputPath,
-          '-ar', '16000',  // Set sample rate to 16kHz
-          '-ac', '1',      // Set to mono
-          '-c:a', 'pcm_s16le', // Use PCM S16 LE codec which is well supported
-          outputPath
-        ]);
-
-        let stderr = '';
-        ffmpegProcess.stderr.on('data', (data) => {
-          stderr += data.toString();
-        });
-
-        ffmpegProcess.on('close', (code) => {
-          if (code === 0) {
-            logger.info('Audio format conversion completed', {
-              inputPath,
-              outputPath
-            });
-            resolve(outputPath);
-          } else {
-            logger.error('Audio format conversion failed', {
-              inputPath,
-              code,
-              stderr
-            });
-            reject(new Error(`FFmpeg process exited with code ${code}, stderr: ${stderr}`));
-          }
-        });
-
-        ffmpegProcess.on('error', (err) => {
-          logger.error('Error running FFmpeg', {
-            inputPath,
-            error: err.message
-          });
-          reject(err);
-        });
-      });
-    } catch (error) {
-      logger.error('Error during audio format conversion', {
-        inputPath,
-        error: error.message,
-        stack: error.stack
-      });
-      
-      throw error;
-    }
-  }
-
-  /**
    * Clean up temporary files
    * @param {string} filePath - Path to the file to delete
    */
@@ -151,7 +78,8 @@ class MediaHandler {
   }
 
   /**
-   * Process audio buffer through the entire pipeline: save, convert, and return path
+   * Process audio buffer through the entire pipeline: save and return path
+   * Google Cloud Speech-to-Text can handle most audio formats directly
    * @param {Buffer} audioBuffer - Audio data as buffer
    * @param {string} originalMimeType - Original MIME type of the audio
    * @returns {Promise<string>} - Path to the processed audio file ready for STT
@@ -182,16 +110,12 @@ class MediaHandler {
       // Save the audio buffer to a temporary file
       const tempFilePath = await this.saveAudioBuffer(audioBuffer, extension);
 
-      // Convert the audio to a format compatible with Google STT if needed
-      const processedFilePath = await this.convertAudioFormat(tempFilePath);
-
       logger.info('Audio buffer processed successfully', {
         originalMimeType,
-        tempFilePath,
-        processedFilePath
+        tempFilePath
       });
 
-      return processedFilePath;
+      return tempFilePath;
     } catch (error) {
       logger.error('Error processing audio buffer', {
         originalMimeType,
