@@ -16,6 +16,14 @@ const logger = createLogger({
   ),
   defaultMeta: { service: 'media-handler' },
   transports: [
+    new transports.Console({ // Changed to Console to ensure logs appear in Railway
+      format: format.combine(
+        format.timestamp(),
+        format.errors({ stack: true }),
+        format.splat(),
+        format.json()
+      )
+    }),
     new transports.File({
       filename: 'logs/media-handler.log'
     })
