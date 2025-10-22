@@ -1,3 +1,13 @@
+/**
+ * WhatsApp Translation Bot - Main Server
+ * 
+ * This is the main entry point for the WhatsApp translation bot application.
+ * The bot receives voice messages, converts them to text using Speech-to-Text services,
+ * translates the text to multiple languages, and responds via WhatsApp.
+ * 
+ * @module server
+ */
+
 require('dotenv').config();
 const express = require('express');
 const { createLogger, format, transports } = require('winston');
