@@ -78,3 +78,11 @@ For the overall project goals and requirements, refer to `prompt.md`.
 *   **Integration Testing:** Ensure all services work together properly in the processing pipeline.
 *   **Backward Compatibility:** Test that changes maintain compatibility with existing functionality.
 *   **Comprehensive Validation:** Create and run tests that validate all aspects of the implemented features before finalizing changes.
+
+**Implementation Best Practices:**
+
+*   **Research Before Implementation:** Always research the correct approach for implementing features, especially when working with external APIs, to ensure proper implementation from the start.
+*   **Backward Compatibility:** Maintain compatibility with existing code and APIs when adding new features or making changes.
+*   **Proper Error Handling:** Preserve and maintain error handling mechanisms when refactoring or adding new functionality.
+*   **Configuration-Driven Development:** Use configuration files to manage settings, API parameters, and feature flags to maintain flexibility and maintainability.
+*   **API Documentation Adherence:** Follow official API documentation to implement features correctly, such as using proper parameters for automatic language detection rather than omitting required fields.
