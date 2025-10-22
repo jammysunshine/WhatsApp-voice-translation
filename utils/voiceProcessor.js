@@ -135,7 +135,7 @@ class VoiceProcessor {
       
       throw error; // Re-throw the original error to maintain error flow
     } finally {
-      // Clean up temporary files if they were created
+      // Enhanced cleanup in finally block to ensure resources are always freed
       if (processedFilePath) {
         try {
           logger.info('Cleaning up temporary audio file', { processedFilePath });
@@ -147,8 +147,13 @@ class VoiceProcessor {
             error: cleanupError.message,
             stack: cleanupError.stack
           });
-          // Don't throw here as it's not critical for the main process
+          // Don't re-throw cleanup errors as they're not critical to the main operation
         }
+      } else {
+        logger.warn('No processed file path found for cleanup', {
+          mimeType,
+          size: audioBuffer ? audioBuffer.length : 'undefined'
+        });
       }
     }
   }
