@@ -115,6 +115,10 @@ async function handleWhatsAppMessage(message, webhookEvent) {
       
       // Get the media ID and MIME type from the message
       const { id: mediaId, mime_type: mimeType } = message.audio;
+      logger.info('Media details from WhatsApp message', {
+        mediaId,
+        mimeType
+      });
       
       // Process the voice note
       await processVoiceNote(message.from, mediaId, mimeType);
@@ -142,7 +146,9 @@ async function handleWhatsAppMessage(message, webhookEvent) {
     logger.error('Error processing WhatsApp message', {
       error: error.message,
       stack: error.stack,
-      message: message
+      from: message.from,
+      messageId: message.id,
+      messageType: message.type
     });
     
     // Rethrow the error so it can be caught by the global error handler
@@ -162,15 +168,27 @@ async function processVoiceNote(recipientId, mediaId, mimeType = 'audio/ogg') {
     // Send a quick acknowledgment to the user
     await whatsappService.sendMessage(recipientId, "Received your voice note! Processing and translating now...");
     
+    logger.info('Fetching media URL from WhatsApp', { mediaId });
     // Get the media URL from WhatsApp
     const mediaUrl = await whatsappService.getMediaUrl(mediaId);
     
+    logger.info('Downloading media file from WhatsApp', { mediaUrl });
     // Download the media file
     const audioBuffer = await whatsappService.downloadMedia(mediaUrl);
+    logger.info('Media file downloaded successfully', {
+      size: audioBuffer ? audioBuffer.length : 'undefined',
+      type: audioBuffer ? typeof audioBuffer : 'undefined'
+    });
     
+    logger.info('Processing voice note with VoiceProcessor', { mimeType });
     // Process the voice note (transcribe and translate)
     const result = await voiceProcessor.processVoiceNote(audioBuffer, mimeType);
+    logger.info('Voice processing completed successfully', {
+      originalTextLength: result.originalText ? result.originalText.length : 0,
+      translationCount: result.translations ? Object.keys(result.translations).length : 0
+    });
     
+    logger.info('Sending translated response back to user');
     // Send the translated response back to the user
     await whatsappService.sendTranslatedResponse(recipientId, result.translations, result.originalText);
     
@@ -193,7 +211,8 @@ async function processVoiceNote(recipientId, mediaId, mimeType = 'audio/ogg') {
     } catch (sendError) {
       logger.error('Error sending error message to user', {
         recipientId,
-        error: sendError.message
+        error: sendError.message,
+        stack: sendError.stack
       });
     }
     
