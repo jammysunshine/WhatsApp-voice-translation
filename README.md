@@ -533,7 +533,11 @@ PROD_JOB_TIMEOUT=60000
 
 #### Media URL Retrieval Error
 **Problem**: "Unknown path components" error
-**Solution**: Ensure correct API endpoint format without phone number ID for media operations
+**Solution**: The application uses the correct API endpoint format `https://graph.facebook.com/{version}/{mediaId}` for media operations, without phone number ID or additional path components like `/media/`
+
+#### WhatsApp API Version Compatibility
+**Problem**: API version deprecation warnings
+**Solution**: The application is compatible with all WhatsApp Business Cloud API versions. Update the `WHATSAPP_API_VERSION` environment variable to use the latest supported version. Facebook automatically upgrades older API versions when needed.
 
 #### Memory Issues
 **Problem**: Application running out of memory with large files
