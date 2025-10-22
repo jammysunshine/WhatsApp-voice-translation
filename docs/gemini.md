@@ -16,6 +16,17 @@ For the overall project goals and requirements, refer to `prompt.md`.
 
 ---
 
+**Backlog Management Mandate:** As part of the development workflow, a `backlog.md` file must be created, reviewed, updated, and acted upon regularly. This includes:
+
+*   **Creation:** A backlog file must be created at the start of any significant development effort to track tasks, features, and improvements.
+*   **Regular Review:** The backlog must be reviewed frequently (at least weekly) to ensure items remain relevant and properly prioritized.
+*   **Continuous Updates:** New items should be added to the backlog as they're identified, and progress should be tracked regularly.
+*   **Actionable Items:** Each backlog item should be specific, measurable, and actionable to ensure meaningful progress.
+*   **Branch-Specific Backlogs:** When working on feature branches, maintain branch-specific backlog items that align with the branch's objectives.
+*   **Completion Tracking:** Completed items must be moved to a "Completed" section with timestamps to track progress and velocity.
+
+---
+
 **Git Configuration:**
 
 *   **`.gitignore` Configuration:** The .gitignore file must be configured to track only source code, explicitly excluding:
@@ -65,10 +76,23 @@ For the overall project goals and requirements, refer to `prompt.md`.
 
 ---
 
+**Auto-Testing and Optimization Features Implemented:**
+
+*   **Comprehensive Monitoring System:** Implemented a centralized monitoring service (`utils/monitoring.js`) that tracks API response times, processing durations, memory usage, CPU usage, and error occurrences across the application.
+*   **Performance Metrics Collection:** Added timers and metrics recording throughout the processing pipeline (webhook routes, voice processing, speech-to-text, translation services) to measure performance bottlenecks.
+*   **Memory Leak Prevention:** Added memory usage checks before processing large audio files and implemented proper resource cleanup to prevent memory leaks.
+*   **Unit Testing Framework:** Created a comprehensive test suite using Jest with tests for monitoring, validation, and configuration modules to ensure code quality and prevent regressions.
+*   **Environment-Specific Configuration:** Enhanced configuration management to support different environments (development, staging, production) with environment-specific settings for rate limiting, processing jobs, and timeouts.
+*   **Dependency Security Audit:** Performed and completed security audits, fixing critical vulnerabilities in dependencies like protobufjs and updating vulnerable packages.
+*   **Code Quality Improvements:** Updated code comments, documentation, and implemented best practices throughout the codebase.
+
+---
+
 **Agent Workflow Mandates:**
 
 *   **Self-Review Before Testing:** Always perform a thorough self-review of all implemented changes, including code, configuration, and documentation, to ensure correctness, completeness, and adherence to project standards *before* asking the user to test.
 *   **Security First:** Always implement security measures as a primary concern when dealing with webhooks and API endpoints.
+*   **Update gemini.md Regularly:** As a critical mandate, this `gemini.md` file must be updated automatically after every major feature implementation or optimization work to document the changes and keep the guidelines current. This includes documenting new testing practices, monitoring features, configuration options, and code quality improvements.
 
 **Testing Best Practices:**
 
@@ -78,6 +102,7 @@ For the overall project goals and requirements, refer to `prompt.md`.
 *   **Integration Testing:** Ensure all services work together properly in the processing pipeline.
 *   **Backward Compatibility:** Test that changes maintain compatibility with existing functionality.
 *   **Comprehensive Validation:** Create and run tests that validate all aspects of the implemented features before finalizing changes.
+*   **Automated Testing Integration:** All new features and optimizations must include corresponding unit tests in the test suite to ensure functionality is preserved and regressions are caught early.
 
 **Implementation Best Practices:**
 
@@ -111,3 +136,6 @@ For the overall project goals and requirements, refer to `prompt.md`.
 *   **Configurable Settings:** Make important parameters configurable through environment variables rather than hardcoding values.
 *   **Consistent Logging:** Use standardized logging approaches throughout the application instead of raw console.log statements.
 *   **Documentation:** Maintain up-to-date documentation for APIs, configuration options, and internal functions.
+*   **Performance Monitoring:** Implement and maintain performance monitoring capabilities to track application health and identify optimization opportunities.
+*   **Dependency Management:** Regularly audit dependencies for security vulnerabilities and keep packages up-to-date while maintaining compatibility.
+*   **Environment-Specific Behavior:** Implement configuration options that allow the application to adapt its behavior based on the deployment environment (development, staging, production).
