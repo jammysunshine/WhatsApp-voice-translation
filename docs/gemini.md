@@ -69,3 +69,12 @@ For the overall project goals and requirements, refer to `prompt.md`.
 
 *   **Self-Review Before Testing:** Always perform a thorough self-review of all implemented changes, including code, configuration, and documentation, to ensure correctness, completeness, and adherence to project standards *before* asking the user to test.
 *   **Security First:** Always implement security measures as a primary concern when dealing with webhooks and API endpoints.
+
+**Testing Best Practices:**
+
+*   **Module Import Validation:** Test that all modified modules can be imported without syntax errors before testing functionality.
+*   **Configuration Verification:** Confirm that new configurations are properly loaded and accessible to the application.
+*   **Method Functionality Tests:** Verify that new methods and functions work as expected with various inputs.
+*   **Integration Testing:** Ensure all services work together properly in the processing pipeline.
+*   **Backward Compatibility:** Test that changes maintain compatibility with existing functionality.
+*   **Comprehensive Validation:** Create and run tests that validate all aspects of the implemented features before finalizing changes.
